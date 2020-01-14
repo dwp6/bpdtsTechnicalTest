@@ -1,10 +1,10 @@
 # bpdtsTechnicalTest
 # AUTOMATION-PRACTICE-WEBSITE
-This is a sample implementation of functional test using Cucumber and Selenium framework.
-POM has been used along with BDD gherkin style.
-This practice project is dynamic and a good blueprint to build on for tests based on BDD as well as UI testing.
-Framework is ready to be commited in GitLab and Jenkins for continues integration and to run against a pipline
-This POM framework structure can be easly enhanced and applied to small or large project includingn API and performace testing.
+* This is a sample implementation of functional test using Cucumber and Selenium framework.
+* POM has been used along with BDD gherkin style.
+* This practice project is dynamic and a good blueprint to build on for tests based on BDD as well as UI testing.
+* Framework is ready to be commited in GitLab and Jenkins for continues integration and to run against a pipline
+* This POM framework structure can be easly enhanced and applied to small or large project includingn API and performace testing.
 
 ## Framework used
 * Cucumber
