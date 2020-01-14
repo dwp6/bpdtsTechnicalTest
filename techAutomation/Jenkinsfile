@@ -1,0 +1,69 @@
+node {
+  stage('Data setup') {
+     removeTestData()
+     createTestData()
+   }
+}
+node('cucumber') {
+   stage('BDD scenarios execution') {
+     git branch: '${BRANCH_NAME}', credentialsId: 'mast1', url: 'git@bb-aw2c-civs-01.burbank.working-age.local:<Your repository>.git'
+     try {
+         sh 'JAVA_HOME=/docker-java-home trustStorePassword=${trustStorePassword} keyStorePassword=${keyStorePassword} mvn clean test -Denvironment=${ENVIRONMENT} -DdriverOSDir=linux-2.41 ${CUSTOM_RUNTIME_PARAM}'
+     }
+     catch(Exception ignored) {
+         currentBuild.result = 'FAILURE'
+     }
+     finally {
+         cucumber fileIncludePattern: '**/cucumber-report.json', jsonReportDirectory: 'target/', sortingMethod: 'NATURAL'
+     }
+   }
+}
+node {
+  stage('Data cleanup') {
+     if(currentBuild.result != 'FAILURE') {
+        removeTestData()
+     }
+  }
+}
+
+def removeTestData() {
+    echo 'Removing test users'
+    sh 'curl -X DELETE ${TEST_FIXTURE_URL}/dummy/users/for_automation -H \'Content-Type: application/json\''
+
+    echo 'Removing test records'
+    sh 'curl -X DELETE ${TEST_FIXTURE_URL}/records/sdp/all -H \'Content-Type: application/json\''
+}
+
+def createTestData() {
+    createTestUsers()
+    echo 'Creating SDP records'
+    def nextApDate = sh(returnStdout: true, script: 'date -d "+1 month -1 day" +"%Y-%m-%d"').trim()
+    createTestRecords(params.INIT_ELIGIBILITY_CASE, nextApDate, 1)
+    createTestRecordsWithoutStatus(params.INIT_CARER_ELEMENT_CASE, nextApDate)
+
+}
+def createTestUsers() {
+    echo 'Creating test users'
+    sh 'curl -X POST ${TEST_FIXTURE_URL}/dummy/users/for_automation -H \'Content-Type: application/json\''
+}
+
+def createTestRecords(numberOfRecords, apDate, sdpStatus) {
+    sh """curl -X POST  ${TEST_FIXTURE_URL}/dummy/cases/sdp/create  -H \'Content-Type: application/json\'  \\
+      -d \'{
+    	"number":${numberOfRecords},
+    	"attributes": {
+    		"nextApEndDate":"${apDate}",
+    		"sdpStatus": "${sdpStatus}"
+    	}
+    }\'"""
+}
+
+def createTestRecordsWithoutStatus(numberOfRecords, apDate) {
+    sh """curl -X POST  ${TEST_FIXTURE_URL}/dummy/cases/sdp/create  -H \'Content-Type: application/json\'  \\
+      -d \'{
+    	"number":${numberOfRecords},
+    	"attributes": {
+    		"nextApEndDate":"${apDate}"
+    	}
+    }\'"""
+}

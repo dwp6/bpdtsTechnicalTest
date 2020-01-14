@@ -1,0 +1,10 @@
+# Created at 2020-01-10T00:08:43.553
+Corrupted STDOUT by directly writing to native stream in forked JVM 1. Stream 'No features found at [classpath:cucumber.features]'.
+java.lang.IllegalArgumentException: Stream stdin corrupted. Expected comma after third character in command 'No features found at [classpath:cucumber.features]'.
+	at org.apache.maven.plugin.surefire.booterclient.output.ForkClient$OperationalData.<init>(ForkClient.java:511)
+	at org.apache.maven.plugin.surefire.booterclient.output.ForkClient.processLine(ForkClient.java:209)
+	at org.apache.maven.plugin.surefire.booterclient.output.ForkClient.consumeLine(ForkClient.java:176)
+	at org.apache.maven.plugin.surefire.booterclient.output.ThreadedStreamConsumer$Pumper.run(ThreadedStreamConsumer.java:88)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+
+
